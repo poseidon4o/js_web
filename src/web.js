@@ -124,8 +124,8 @@ link_cls.prototype.tick = function() {
     dir.normalize();
     dir.scale(Math.sqrt(magn));
 
-    this.right.poke(dir);
-    this.left.poke(dir.negative());
+    this.right.poke(dir.scale(1/this.right.links.length));
+    this.left.poke(dir.negative().scale(1/this.left.links.length));
 };
 
 link_cls.prototype.draw = function(ctx) {
@@ -210,6 +210,7 @@ function system_cls(canvas_id, width, height) {
         this.ctx = this.canvas.getContext('2d');
         this.ctx.fillStyle = "#000000";
         this.ctx.strokeStyle = "#000000";
+	this.ctx.lineWidth = 0.3;
 
         this.bounds = new bounds_cls();
         this.bounds.top = this.canvas.clientTop;
