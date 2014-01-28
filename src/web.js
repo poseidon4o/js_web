@@ -1,3 +1,6 @@
+var EPS = Math.pow(10, -6);
+var DEBUG = false;
+
 function vector_cls(x, y) {
     this.x = x || 0.0;
     this.y = y || 0.0;
@@ -14,21 +17,23 @@ vector_cls.prototype.length = function() {
 vector_cls.prototype.scale = function(magn) {
     this.x *= magn;
     this.y *= magn;
+    return this;
 };
 
 vector_cls.prototype.translate = function(x, y) {
     this.x += x;
     this.y += y;
+    return this;
 };
 
 vector_cls.prototype.add = function(vector) {
-    this.translate(vector.x, vector.y);
+    return this.translate(vector.x, vector.y);
 };
 
 vector_cls.prototype.dir_to = function(to) {
     var dir = new vector_cls();
-    dir.x = this.x - to.x;
-    dir.y = this.y - to.y;
+    dir.x = to.x - this.x;
+    dir.y = to.y - this.y;
     return dir;
 };
 
@@ -39,8 +44,24 @@ vector_cls.prototype.negative = function() {
     return neg;
 };
 
-function distance(from, to) {
+vector_cls.prototype.normalize = function() {
+    var l = this.length();
+    this.x /= l;
+    this.y /= l;
+    return this;
+};
+
+
+function distance_sq(from, to) {
     return from && to ? ( (from.x - to.x)*(from.x - to.x) + (from.y - to.y)*(from.y - to.y) ) : 0;
+}
+
+function distance(from, to) {
+    return Math.sqrt(distance_sq(from, to));
+}
+
+function dot(left, right) {
+    return left.x * right.x + left.y * right.y;
 }
 
 
@@ -51,19 +72,20 @@ function node_cls(position, velocity, size) {
     this.accelerations = [];
     this.links = [];
     this.size = size || 4;
+
 };
 
 node_cls.prototype.tick = function() {
+
     for(var c = this.accelerations.length - 1; c >= 0; --c) {
         this.velocity.add(this.accelerations[c]);
     }
     this.accelerations = [];
+    this.position.x += this.velocity.x;
+    this.position.y += this.velocity.y;
 };
 
 node_cls.prototype.poke = function(acc_vector) {
-    for(var c = this.links.length - 1; c >= 0; --c) {
-        this.links[c].poke(this, acc_vector);
-    }
     this.accelerations.push(acc_vector);
 };
 
@@ -81,16 +103,23 @@ node_cls.prototype.draw = function(ctx) {
 function link_cls(left, right) {
     this.left = left || null;
     this.right = right || null;
-    this.length = distance(left, right);
+    this.length = distance(left.position, right.position);
 };
 
-link_cls.prototype.poke = function() {
-    throw "--";
+link_cls.prototype.tick = function() {
+    var dir = this.left.position.dir_to(this.right.position);
+    if (dir.length_sq() <= this.length * this.length + EPS) {
+        return;
+    }
+    this.right.poke(dir);
+    this.left.poke(dir.negative());
 };
 
-link_cls.prototype.draw = function() {
-    ctx.moveTo(this.left.x, this.left.y);
-    ctx.lineTo(this.right.x, this.right.y);
+link_cls.prototype.draw = function(ctx) {
+    ctx.beginPath();
+    ctx.moveTo(this.left.position.x, this.left.position.y);
+    ctx.lineTo(this.right.position.x, this.right.position.y);
+    ctx.stroke();
 };
 
 
@@ -107,17 +136,42 @@ function field_cls(total) {
     this.nodes = [];
     this.links = [];
     this.total = total || 10;
+    this.spacing = 30;
 
     for(var c = 0; c < this.total; ++c) {
         for(var r = 0; r < this.total; ++r) {
-            this.nodes.push(new node_cls(new vector_cls(c * 20 + 100, r * 20 + 100)));
+            this.nodes.push(new node_cls(new vector_cls(c * this.spacing + 100, r * this.spacing + 100)));
         }
     }
+    this.relink();
 }
 
-field_cls.prototype.draw = function(ctx) {
+field_cls.prototype.relink = function() {
     for(var c = this.nodes.length - 1; c >= 0; --c) {
+        for(var r = this.nodes.length - 1; r >= 0; --r) {
+            if (r == c) {
+                continue;
+            }
+
+            if (distance_sq(this.nodes[c].position, this.nodes[r].position) < this.spacing * this.spacing + EPS) {
+                this.links.push(new link_cls(this.nodes[c], this.nodes[r]));
+                this.nodes[c].links.push(this.links[this.links.length-1]);
+                this.nodes[r].links.push(this.links[this.links.length-1]);
+            }
+        }
+    }
+};
+
+field_cls.prototype.draw = function(ctx) {
+    for(var c = this.links.length - 1; c >= 0; --c) {
+        this.links[c].tick();
+    }
+    for(var c = this.nodes.length - 1; c >= 0; --c) {
+        this.nodes[c].tick();
         this.nodes[c].draw(ctx);
+    }
+    for(var c = this.links.length - 1; c >= 0; --c) {
+        this.links[c].draw(ctx);
     }
 };
 
@@ -130,7 +184,7 @@ function system_cls(canvas_id, width, height) {
     this.ctx = null;
 
     if (canvas_id !== undefined) {
-        this.field = new field_cls(20);
+        this.field = new field_cls(2);
         this.canvas = document.getElementById(canvas_id);
         this.canvas.width = width || this.canvas.clientWidth;
         this.canvas.height = height || this.canvas.clientHeight;
