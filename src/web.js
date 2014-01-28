@@ -1,6 +1,8 @@
 var EPS = Math.pow(10, -6);
 var DEBUG = false;
 var BOUNCE_WALLS = true;
+var NODE_MASS = 10;
+var ELASTICITY_K = 5;
 
 function vector_cls(x, y) {
     this.x = x || 0.0;
@@ -73,7 +75,6 @@ function node_cls(position, velocity, size) {
     this.accelerations = [];
     this.links = [];
     this.size = size || 8;
-
 };
 
 node_cls.prototype.tick = function(bounds) {
@@ -124,11 +125,12 @@ link_cls.prototype.tick = function() {
     }
 
     dir.normalize();
-    dir.scale(Math.sqrt(magn));
-    var dir_l = new vector_cls(dir.x, dir.y);
+    var acc = (Math.sqrt(magn) * ELASTICITY_K) / NODE_MASS;
+    dir.scale(acc);
+    var dir_l = dir.negative();
 
     this.right.poke(dir.scale(1/this.right.links.length));
-    this.left.poke(dir_l.negative().scale(1/this.left.links.length));
+    this.left.poke(dir_l.scale(1/this.left.links.length));
 };
 
 
