@@ -1,5 +1,6 @@
 var EPS = Math.pow(10, -6);
 var DEBUG = false;
+var BOUNCE_WALLS = true;
 
 function vector_cls(x, y) {
     this.x = x || 0.0;
@@ -75,12 +76,20 @@ function node_cls(position, velocity, size) {
 
 };
 
-node_cls.prototype.tick = function() {
+node_cls.prototype.tick = function(bounds) {
 
     for(var c = this.accelerations.length - 1; c >= 0; --c) {
         this.velocity.add(this.accelerations[c]);
     }
     this.accelerations = [];
+    if(BOUNCE_WALLS && bounds) {
+	if(this.position.x + this.velocity.x >= bounds.right || this.position.x + this.velocity.x <= bounds.left) {
+	    this.velocity.x *= -1;
+	}
+	if(this.position.y + this.velocity.y >= bounds.bottom || this.position.y + this.velocity.y <= bounds.top) {
+	    this.velocity.y *= -1;
+	}
+    }
     this.position.x += this.velocity.x;
     this.position.y += this.velocity.y;
 };
@@ -113,7 +122,7 @@ link_cls.prototype.tick = function() {
 	return;
     }
     dir.normalize();
-    dir.scale(magn * 0.5);
+    dir.scale(Math.sqrt(magn));
 
     this.right.poke(dir);
     this.left.poke(dir.negative());
@@ -166,12 +175,17 @@ field_cls.prototype.relink = function() {
     }
 };
 
-field_cls.prototype.draw = function(ctx) {
+field_cls.prototype.tick = function(bounds) {
     for(var c = this.links.length - 1; c >= 0; --c) {
-        this.links[c].tick();
+        this.links[c].tick(bounds);
     }
     for(var c = this.nodes.length - 1; c >= 0; --c) {
-        this.nodes[c].tick();
+	this.nodes[c].tick(bounds);
+    }
+}
+
+field_cls.prototype.draw = function(ctx) {
+    for(var c = this.nodes.length - 1; c >= 0; --c) {
         this.nodes[c].draw(ctx);
     }
     for(var c = this.links.length - 1; c >= 0; --c) {
@@ -212,6 +226,7 @@ system_cls.prototype.frame = function() {
         this.bounds.right,
         this.bounds.bottom);
 
+    this.field.tick(this.bounds);
     this.field.draw(this.ctx);
     this.ctx.stroke();
 };
