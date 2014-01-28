@@ -236,6 +236,13 @@ field_cls.prototype.draw = function(ctx) {
     }
 };
 
+field_cls.prototype.clear = function() {
+    for(var c = this.nodes.length - 1; c >= 0; --c) {
+        this.nodes[c].links = [];
+    }
+    this.nodes = [];
+    this.links = [];
+};
 
 
 function system_cls(canvas_id, width, height) {
@@ -262,6 +269,11 @@ function system_cls(canvas_id, width, height) {
         this.bounds.left = this.canvas.clientLeft;    
     };
 }
+
+system_cls.prototype.reset = function() {
+    this.field.clear();
+    this.field = new field_cls(Math.round(Math.sqrt(PARTICLES || 4)));
+};
 
 system_cls.prototype.frame = function() {
     this.ctx.clearRect(
