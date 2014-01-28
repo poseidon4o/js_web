@@ -3,6 +3,7 @@ var DEBUG = false;
 var BOUNCE_WALLS = true;
 var NODE_MASS = 10;
 var ELASTICITY_K = 5;
+var FIELD_FRICTION_K = 0.99;
 
 function vector_cls(x, y) {
     this.x = x || 0.0;
@@ -83,13 +84,15 @@ node_cls.prototype.tick = function(bounds) {
         this.velocity.add(this.accelerations[c]);
     }
     this.accelerations = [];
-    if(BOUNCE_WALLS && bounds) {
-    if(this.position.x + this.velocity.x >= bounds.right || this.position.x + this.velocity.x <= bounds.left) {
-        this.velocity.x *= -1;
-    }
-    if(this.position.y + this.velocity.y >= bounds.bottom || this.position.y + this.velocity.y <= bounds.top) {
-        this.velocity.y *= -1;
-    }
+    this.velocity.scale(FIELD_FRICTION_K);
+
+    if(BOUNCE_WALLS) {
+        if(this.position.x + this.velocity.x >= bounds.right || this.position.x + this.velocity.x <= bounds.left) {
+            this.velocity.x *= -1;
+        }
+        if(this.position.y + this.velocity.y >= bounds.bottom || this.position.y + this.velocity.y <= bounds.top) {
+            this.velocity.y *= -1;
+        }
     }
     this.position.x += this.velocity.x;
     this.position.y += this.velocity.y;
