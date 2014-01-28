@@ -3,7 +3,7 @@
         <script type="text/javascript" src="../src/web.js"></script>
         <script type="text/javascript">
         var system, clock;
-        var PARTICLES = 36;
+        var PARTICLES = 289;
         function start() {
             clock = setInterval(function() {
                 system.frame();
@@ -13,7 +13,7 @@
             clearInterval(clock);
         }
         function init () {
-            system = new system_cls('draw-field', 1000, 1000);
+            system = new system_cls('draw-field', document.body.clientWidth, document.body.clientHeight);
             start();
         }
         function reset () {

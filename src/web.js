@@ -5,6 +5,7 @@ var NODE_MASS = 100;
 var ELASTICITY_K = 4;
 var FIELD_FRICTION_K = 0.99;
 var PULSE_RED = true;
+var SPACING = 20;
 
 function vector_cls(x, y) {
     this.x = x || 0.0;
@@ -189,11 +190,10 @@ function field_cls(total) {
     this.nodes = [];
     this.links = [];
     this.total = total || 10;
-    this.spacing = 100;
 
     for(var c = 0; c < this.total; ++c) {
         for(var r = 0; r < this.total; ++r) {
-            this.nodes.push(new node_cls(new vector_cls(c * this.spacing + 100, r * this.spacing + 100)));
+            this.nodes.push(new node_cls(new vector_cls(c * SPACING + 100, r * SPACING + 100)));
         }
     }
     this.relink();
@@ -209,7 +209,7 @@ field_cls.prototype.relink = function() {
                 continue;
             }
 
-            if (distance_sq(this.nodes[c].position, this.nodes[r].position) < this.spacing * this.spacing + EPS) {
+            if (distance_sq(this.nodes[c].position, this.nodes[r].position) < SPACING * SPACING + EPS) {
                 this.links.push(new link_cls(this.nodes[c], this.nodes[r]));
                 this.nodes[c].links.push(this.links[this.links.length-1]);
                 this.nodes[r].links.push(this.links[this.links.length-1]);
