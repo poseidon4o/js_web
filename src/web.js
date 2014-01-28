@@ -1,9 +1,10 @@
 var EPS = Math.pow(10, -6);
 var DEBUG = false;
 var BOUNCE_WALLS = true;
-var NODE_MASS = 10;
-var ELASTICITY_K = 5;
+var NODE_MASS = 100;
+var ELASTICITY_K = 4;
 var FIELD_FRICTION_K = 0.99;
+var PULSE_RED = true;
 
 function vector_cls(x, y) {
     this.x = x || 0.0;
@@ -76,6 +77,7 @@ function node_cls(position, velocity, size) {
     this.accelerations = [];
     this.links = [];
     this.size = size || 8;
+    this.color = "#000000";
 };
 
 node_cls.prototype.tick = function(bounds) {
@@ -103,12 +105,15 @@ node_cls.prototype.poke = function(acc_vector) {
 };
 
 node_cls.prototype.draw = function(ctx) {
+    ctx.beginPath();
+    ctx.setFillStyle = this.color;
     ctx.fillRect(
         this.position.x - this.size/2,
         this.position.y - this.size/2,
         this.size, 
         this.size
     );
+    ctx.stroke();
 };
 
 
@@ -118,11 +123,13 @@ function link_cls(left, right) {
     this.right = right || null;
     this.length = distance(left.position, right.position);
     this.length_sq = this.length * this.length;
+    this.color = "#000000";
 };
 
 link_cls.prototype.tick = function() {
+
     var dir = this.right.position.dir_to(this.left.position);
-    var magn = dir.length() - this.length;
+    var magn = dir.length_sq() - this.length_sq;
     if (magn < EPS) {
         return;
     }
@@ -139,6 +146,30 @@ link_cls.prototype.tick = function() {
 
 link_cls.prototype.draw = function(ctx) {
     ctx.beginPath();
+
+    if (PULSE_RED) {
+        if (distance_sq(this.left.position, this.right.position) > this.length_sq) {
+            ctx.strokeStyle = "#ff0000";
+            ctx.lineWidth = 1.5;
+        } else {
+            ctx.strokeStyle = "#000000";
+            ctx.lineWidth = 0.3;
+        }
+    } else {
+        var red = (distance_sq(this.left.position, this.right.position) - this.length_sq) / this.length_sq;
+        red = red < 0 ? 0 : red;
+        red = red * (255/5);
+        red = Math.round(red > 255 ? 255 : red);
+        ctx.lineWidth = (red * 2) / 255 + 0.3;
+
+        red = red.toString(16);
+        if( red.length < 2 ) {
+            red = "0" + red;
+        }
+        ctx.strokeStyle = "#" + red + "0000";
+        
+    }
+
     ctx.moveTo(this.left.position.x, this.left.position.y);
     ctx.lineTo(this.right.position.x, this.right.position.y);
     ctx.stroke();
@@ -169,6 +200,9 @@ function field_cls(total) {
 }
 
 field_cls.prototype.relink = function() {
+    for(var c = this.nodes.length - 1; c >= 0; --c) {
+        this.nodes[c].links = [];
+    }
     for(var c = this.nodes.length - 1; c >= 0; --c) {
         for(var r = this.nodes.length - 1; r >= 0; --r) {
             if (r == c) {
