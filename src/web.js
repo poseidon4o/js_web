@@ -58,26 +58,12 @@ vector_cls.prototype.normalize = function() {
 };
 
 
-function distance_sq(from, to) {
-    return from && to ? ( (from.x - to.x)*(from.x - to.x) + (from.y - to.y)*(from.y - to.y) ) : 0;
-}
-
-function distance(from, to) {
-    return Math.sqrt(distance_sq(from, to));
-}
-
-function dot(left, right) {
-    return left.x * right.x + left.y * right.y;
-}
-
-
-
 function node_cls(position, velocity, size) {
     this.position = position || new vector_cls();
     this.velocity = velocity || new vector_cls();
     this.accelerations = [];
     this.links = [];
-    this.size = size || 8;
+    this.size = size || 5;
     this.color = "#000000";
 };
 
@@ -151,7 +137,7 @@ link_cls.prototype.draw = function(ctx) {
     if (PULSE_RED) {
         if (distance_sq(this.left.position, this.right.position) > this.length_sq) {
             ctx.strokeStyle = "#ff0000";
-            ctx.lineWidth = 1.5;
+            ctx.lineWidth = 1;
         } else {
             ctx.strokeStyle = "#000000";
             ctx.lineWidth = 0.3;
@@ -288,3 +274,22 @@ system_cls.prototype.frame = function() {
 };
 
 
+
+
+
+
+function distance_sq(from, to) {
+    return from && to ? ( (from.x - to.x)*(from.x - to.x) + (from.y - to.y)*(from.y - to.y) ) : 0;
+}
+
+function distance(from, to) {
+    return Math.sqrt(distance_sq(from, to));
+}
+
+function dot(left, right) {
+    return left.x * right.x + left.y * right.y;
+}
+
+function random(from, to) {
+    return Math.random() * (to - from) + from;
+}

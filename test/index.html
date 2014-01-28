@@ -13,7 +13,9 @@
             clearInterval(clock);
         }
         function init () {
+            var limit = 50;
             system = new system_cls('draw-field', document.body.clientWidth, document.body.clientHeight);
+            system.field.nodes[parseInt(random(0, system.field.nodes.length))].poke(new vector_cls(random(-limit,limit), random(-limit,limit)));
             start();
         }
         function reset () {
