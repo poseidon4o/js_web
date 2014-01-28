@@ -7,3 +7,5 @@ stop()                                                  - stop animation
 start()                                                 - start animation
 system.field.nodes[X].poke(new vector_cls(P, Q))        - accelerate node X with vector of acceleration (P, Q)
 ```
+
+### [Test here](http://poseidon4o.eu/js_web/test/)
