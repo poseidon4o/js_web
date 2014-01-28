@@ -113,7 +113,7 @@ link_cls.prototype.tick = function() {
 	return;
     }
     dir.normalize();
-    dir.scale(magn/10);
+    dir.scale(magn * 0.5);
 
     this.right.poke(dir);
     this.left.poke(dir.negative());
@@ -188,7 +188,7 @@ function system_cls(canvas_id, width, height) {
     this.ctx = null;
 
     if (canvas_id !== undefined) {
-        this.field = new field_cls(2);
+        this.field = new field_cls(Math.round(Math.sqrt(PARTICLES || 4)));
         this.canvas = document.getElementById(canvas_id);
         this.canvas.width = width || this.canvas.clientWidth;
         this.canvas.height = height || this.canvas.clientHeight;
