@@ -83,12 +83,12 @@ node_cls.prototype.tick = function(bounds) {
     }
     this.accelerations = [];
     if(BOUNCE_WALLS && bounds) {
-	if(this.position.x + this.velocity.x >= bounds.right || this.position.x + this.velocity.x <= bounds.left) {
-	    this.velocity.x *= -1;
-	}
-	if(this.position.y + this.velocity.y >= bounds.bottom || this.position.y + this.velocity.y <= bounds.top) {
-	    this.velocity.y *= -1;
-	}
+    if(this.position.x + this.velocity.x >= bounds.right || this.position.x + this.velocity.x <= bounds.left) {
+        this.velocity.x *= -1;
+    }
+    if(this.position.y + this.velocity.y >= bounds.bottom || this.position.y + this.velocity.y <= bounds.top) {
+        this.velocity.y *= -1;
+    }
     }
     this.position.x += this.velocity.x;
     this.position.y += this.velocity.y;
@@ -113,20 +113,24 @@ function link_cls(left, right) {
     this.left = left || null;
     this.right = right || null;
     this.length = distance(left.position, right.position);
+    this.length_sq = this.length * this.length;
 };
 
 link_cls.prototype.tick = function() {
     var dir = this.right.position.dir_to(this.left.position);
     var magn = dir.length() - this.length;
-    if( magn < 1.0 ) {
-	return;
+    if (magn < EPS) {
+        return;
     }
+
     dir.normalize();
     dir.scale(Math.sqrt(magn));
+    var dir_l = new vector_cls(dir.x, dir.y);
 
     this.right.poke(dir.scale(1/this.right.links.length));
-    this.left.poke(dir.negative().scale(1/this.left.links.length));
+    this.left.poke(dir_l.negative().scale(1/this.left.links.length));
 };
+
 
 link_cls.prototype.draw = function(ctx) {
     ctx.beginPath();
@@ -180,7 +184,7 @@ field_cls.prototype.tick = function(bounds) {
         this.links[c].tick(bounds);
     }
     for(var c = this.nodes.length - 1; c >= 0; --c) {
-	this.nodes[c].tick(bounds);
+        this.nodes[c].tick(bounds);
     }
 }
 
@@ -210,7 +214,7 @@ function system_cls(canvas_id, width, height) {
         this.ctx = this.canvas.getContext('2d');
         this.ctx.fillStyle = "#000000";
         this.ctx.strokeStyle = "#000000";
-	this.ctx.lineWidth = 0.3;
+        this.ctx.lineWidth = 0.3;
 
         this.bounds = new bounds_cls();
         this.bounds.top = this.canvas.clientTop;
