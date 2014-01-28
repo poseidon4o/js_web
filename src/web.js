@@ -71,7 +71,7 @@ function node_cls(position, velocity, size) {
     this.velocity = velocity || new vector_cls();
     this.accelerations = [];
     this.links = [];
-    this.size = size || 4;
+    this.size = size || 8;
 
 };
 
@@ -107,10 +107,14 @@ function link_cls(left, right) {
 };
 
 link_cls.prototype.tick = function() {
-    var dir = this.left.position.dir_to(this.right.position);
-    if (dir.length_sq() <= this.length * this.length + EPS) {
-        return;
+    var dir = this.right.position.dir_to(this.left.position);
+    var magn = dir.length() - this.length;
+    if( magn < 1.0 ) {
+	return;
     }
+    dir.normalize();
+    dir.scale(magn/10);
+
     this.right.poke(dir);
     this.left.poke(dir.negative());
 };
@@ -136,7 +140,7 @@ function field_cls(total) {
     this.nodes = [];
     this.links = [];
     this.total = total || 10;
-    this.spacing = 30;
+    this.spacing = 100;
 
     for(var c = 0; c < this.total; ++c) {
         for(var r = 0; r < this.total; ++r) {
