@@ -45,18 +45,19 @@ system_cls.prototype.reset = function() {
     this.field = new field_cls(Math.round(Math.sqrt(PARTICLES || 4)));
 };
 
-system_cls.prototype.frame = function(only_draw, skip_list) {
+system_cls.prototype.draw = function() {
     this.ctx.clearRect(
         this.bounds.left,
         this.bounds.top,
         this.bounds.right,
         this.bounds.bottom);
 
-    if( !only_draw || only_draw == false ) {
-        this.field.tick(this.bounds, skip_list || []);
-    }
     this.field.draw(this.ctx);
     this.ctx.stroke();
+};
+
+system_cls.prototype.tick = function(skip_list) {
+    this.field.tick(this.bounds, skip_list || []);
 };
 
 system_cls.prototype.get_node_at = function(pos) {

@@ -6,30 +6,59 @@
         <script type="text/javascript" src="../src/field.js"></script>
         <script type="text/javascript" src="../src/system.js"></script>
         <script type="text/javascript">
-        var system, clock, interactive_interval;
+
+        var system, tick_clock, anim_clock;
         var PARTICLES = 1000, FPS = 25;
 
         var mouse_down = false, ctrl_down = false, dragged_node = null;
 
-        function interval () {
+        window.requestAnimFrame = (function(){
+            return  window.requestAnimationFrame       ||
+                    window.webkitRequestAnimationFrame ||
+                    window.mozRequestAnimationFrame    ||
+                    window.oRequestAnimationFrame      ||
+                    window.msRequestAnimationFrame     ||
+                    function( callback ){
+                        window.setTimeout(callback, 1000 / FPS);
+                    };
+        })();
+
+        window.cancelRequestAnimFrame = ( function() {
+            return window.cancelAnimationFrame                  ||
+                    window.webkitCancelRequestAnimationFrame    ||
+                    window.mozCancelRequestAnimationFrame       ||
+                    window.oCancelRequestAnimationFrame         ||
+                    window.msCancelRequestAnimationFrame        ||
+                    clearTimeout
+        } )();
+
+
+       
+
+        function ticker () {
             if (mouse_down) {
                 if (ctrl_down) {
-                    system.frame(false, [dragged_node.id]);
-                } else {
-                    system.frame(true);
+                    system.tick([dragged_node.id]);
                 }
                 dragged_node.position = system.get_mouse();
             } else {
-                system.frame();
+                system.tick();
             }
-            
+            tick_clock = requestAnimFrame(ticker);
+        }
+
+        function animation () {
+            system.draw();
+            anim_clock = requestAnimFrame(animation);
         }
 
         function start() {
-            clock = setInterval(interval, 1000/FPS);
+            ticker();
+            animation();
         }
         function stop() {
-            clearInterval(clock);
+            cancelRequestAnimFrame(tick_clock);
+            cancelRequestAnimFrame(anim_clock);
         }
         function init () {
             document.getElementById('ghub').ondragstart = function() { return false; };
