@@ -14,7 +14,7 @@
         }
         function init () {
             var limit = 50;
-            system = new system_cls('draw-field', document.body.clientWidth * 0.9, document.body.clientHeight * 0.9);
+            system = new system_cls('draw-field');
  //           system.field.nodes[parseInt(random(0, system.field.nodes.length))].poke(new vector_cls(random(-limit,limit), random(-limit,limit)));
             start();
         }
@@ -41,9 +41,21 @@
 
 
         </script>
+	<style>
+	* {
+		margin: 0;
+		padding: 0;
+	}
+	#draw-field {
+		float: left;
+		clear: both;
+		border: 1px solid red;
+		cursor: pointer;
+	}
+	</style>
     </head>
-    <body onload="javascript:init()" style="margin:0;border:1px solid red;">
+    <body onload="javascript:init()">
         <a href="https://github.com/poseidon4o/js_web" target="_blank" style="float:left;display:block;">Github</a>
-        <canvas onmousedown="javascript:mdown();" onmouseup="javascript:mup()" onmouseout="javascript:mup()" style="cursor:pointer;" id="draw-field"></canvas>       
+        <canvas onmousedown="javascript:mdown();" onmouseup="javascript:mup()" onmouseout="javascript:mup()" id="draw-field"></canvas>       
     </body>
 </html>

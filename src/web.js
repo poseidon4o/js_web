@@ -262,7 +262,7 @@ field_cls.prototype.get_nearest = function(pos, range) {
 };
 
 
-function system_cls(canvas_id, width, height) {
+function system_cls(canvas_id) {
     this.field = null;
     this.bounds = null;
     this.canvas = null;
@@ -270,8 +270,14 @@ function system_cls(canvas_id, width, height) {
     this.mouse = null;
 
     if (canvas_id !== undefined) {
+	this.canvas = document.getElementById(canvas_id);
+
+	// 30 - black magic number
+	var width = document.body.clientWidth - 30;
+	var height = document.body.clientHeight - this.canvas.clientTop - 30;
+
+
         this.field = new field_cls(Math.round(Math.sqrt(PARTICLES || 4)));
-        this.canvas = document.getElementById(canvas_id);
         this.canvas.width = width || this.canvas.clientWidth;
         this.canvas.height = height || this.canvas.clientHeight;
 
