@@ -2,7 +2,7 @@
     <head>
         <script type="text/javascript" src="../src/web.js"></script>
         <script type="text/javascript">
-        var system, clock;
+        var system, clock, interactive_interval;
         var PARTICLES = 1000, FPS = 25;
         function start() {
             clock = setInterval(function() {
@@ -15,18 +15,34 @@
         function init () {
             var limit = 50;
             system = new system_cls('draw-field', document.body.clientWidth * 0.9, document.body.clientHeight * 0.9);
-            system.field.nodes[parseInt(random(0, system.field.nodes.length))].poke(new vector_cls(random(-limit,limit), random(-limit,limit)));
+ //           system.field.nodes[parseInt(random(0, system.field.nodes.length))].poke(new vector_cls(random(-limit,limit), random(-limit,limit)));
             start();
         }
         function reset () {
             system.reset();
         }
 
+        function mdown() {
+		stop();
+		var sl_node = system.get_node_at(system.get_mouse());
+		if( sl_node ) {
+			interactive_interval = setInterval(function() {
+				sl_node.position = system.get_mouse();
+				system.frame(true);
+			}, 1000/FPS);
+		}
+	}
+
+	function mup() {
+		clearInterval(interactive_interval);
+		start();
+	}
+
 
         </script>
     </head>
     <body onload="javascript:init()" style="margin:0;border:1px solid red;">
         <a href="https://github.com/poseidon4o/js_web" target="_blank" style="float:left;display:block;">Github</a>
-        <canvas id="draw-field"></canvas>       
+        <canvas onmousedown="javascript:mdown();" onmouseup="javascript:mup()" onmouseout="javascript:mup()" style="cursor:pointer;" id="draw-field"></canvas>       
     </body>
 </html>
