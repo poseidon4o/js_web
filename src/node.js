@@ -3,7 +3,6 @@ function node_cls(position, velocity, size) {
     this.velocity = velocity || new vector_cls();
     this.accelerations = [];
     this.links = [];
-    this.size = size || 5;
     this.color = "#000000";
     this.id = 0;
 };
@@ -43,10 +42,10 @@ node_cls.prototype.draw = function(ctx) {
     ctx.beginPath();
     ctx.setFillStyle = this.color;
     ctx.fillRect(
-        this.position.x - this.size/2,
-        this.position.y - this.size/2,
-        this.size, 
-        this.size
+        this.position.x - NODE_SIZE/2,
+        this.position.y - NODE_SIZE/2,
+        NODE_SIZE, 
+        NODE_SIZE
     );
     ctx.stroke();
 };

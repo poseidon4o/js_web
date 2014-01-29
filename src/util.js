@@ -5,6 +5,7 @@ var ELASTICITY_K = 4;
 var FIELD_FRICTION_K = 0.9;
 var PULSE_RED = true;
 var SPACING = 20;
+var NODE_SIZE = 5;
 
 function vector_cls(x, y) {
     this.x = x || 0.0;
