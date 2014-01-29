@@ -1,7 +1,7 @@
 var EPS = Math.pow(10, -6);
 var DEBUG = false;
 var BOUNCE_WALLS = true;
-var NODE_MASS = 100;
+var NODE_MASS = 500;
 var ELASTICITY_K = 4;
 var FIELD_FRICTION_K = 0.99;
 var PULSE_RED = true;
@@ -65,9 +65,13 @@ function node_cls(position, velocity, size) {
     this.links = [];
     this.size = size || 5;
     this.color = "#000000";
+    this.id = 0;
 };
 
-node_cls.prototype.tick = function(bounds) {
+node_cls.prototype.tick = function(bounds, node_map, link_map) {
+    if (node_map[this.id] == 1) {
+        return;
+    }
 
     for(var c = this.accelerations.length - 1; c >= 0; --c) {
         this.velocity.add(this.accelerations[c]);
@@ -83,8 +87,11 @@ node_cls.prototype.tick = function(bounds) {
             this.velocity.y *= -1;
         }
     }
-    this.position.x += this.velocity.x;
-    this.position.y += this.velocity.y;
+    this.position.add(this.velocity);
+    node_map[this.id] = 1;
+    for(var c = this.links.length - 1; c >= 0; --c) {
+        this.links[c].tick(bounds, node_map, link_map);
+    }
 };
 
 node_cls.prototype.poke = function(acc_vector) {
@@ -111,23 +118,31 @@ function link_cls(left, right) {
     this.length = distance(left.position, right.position);
     this.length_sq = this.length * this.length;
     this.color = "#000000";
+    this.id = 0;
 };
 
-link_cls.prototype.tick = function() {
-
-    var dir = this.right.position.dir_to(this.left.position);
-    var magn = dir.length_sq() - this.length_sq;
-    if (magn < EPS) {
+link_cls.prototype.tick = function(bounds, node_map, link_map) {
+    if (link_map[this.id] == 1) {
         return;
     }
 
-    dir.normalize();
-    var acc = (Math.sqrt(magn) * ELASTICITY_K) / NODE_MASS;
-    dir.scale(acc);
-    var dir_l = dir.negative();
+    link_map[this.id] = 1;
+    var dir = this.right.position.dir_to(this.left.position);
+    var magn = dir.length_sq() - this.length_sq;
+    
+    if (magn >= EPS) {
+        dir.normalize();
+        var acc = (Math.sqrt(magn) * ELASTICITY_K) / NODE_MASS;
+        dir.scale(acc);
+        var dir_l = dir.negative();
 
-    this.right.poke(dir.scale(1/this.right.links.length));
-    this.left.poke(dir_l.scale(1/this.left.links.length));
+        this.right.poke(dir.scale(this.right.links.length));
+        this.left.poke(dir_l.scale(this.left.links.length));        
+    }
+
+
+    this.left.tick(bounds, node_map, link_map);
+    this.right.tick(bounds, node_map, link_map);
 };
 
 
@@ -180,6 +195,7 @@ function field_cls(total) {
     for(var c = 0; c < this.total; ++c) {
         for(var r = 0; r < this.total; ++r) {
             this.nodes.push(new node_cls(new vector_cls(c * SPACING + 100, r * SPACING + 100)));
+            this.nodes[this.nodes.length - 1].id = this.nodes.length - 1;
         }
     }
     this.relink();
@@ -197,6 +213,7 @@ field_cls.prototype.relink = function() {
 
             if (distance_sq(this.nodes[c].position, this.nodes[r].position) < SPACING * SPACING + EPS) {
                 this.links.push(new link_cls(this.nodes[c], this.nodes[r]));
+                this.links[this.links.length - 1].id = this.links.length - 1;
                 this.nodes[c].links.push(this.links[this.links.length-1]);
                 this.nodes[r].links.push(this.links[this.links.length-1]);
             }
@@ -205,12 +222,10 @@ field_cls.prototype.relink = function() {
 };
 
 field_cls.prototype.tick = function(bounds) {
-    for(var c = this.links.length - 1; c >= 0; --c) {
-        this.links[c].tick(bounds);
-    }
-    for(var c = this.nodes.length - 1; c >= 0; --c) {
-        this.nodes[c].tick(bounds);
-    }
+    var node_map = new Int8Array(this.nodes.length),
+        link_map = new Int8Array(this.links.length);
+
+    this.nodes[0].tick(bounds, node_map, link_map);
 }
 
 field_cls.prototype.draw = function(ctx) {
