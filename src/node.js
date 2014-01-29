@@ -20,11 +20,12 @@ node_cls.prototype.tick = function(bounds, node_map, link_map) {
     this.velocity.scale(FIELD_FRICTION_K);
 
     if(BOUNCE_WALLS) {
-        if(this.position.x + this.velocity.x >= bounds.right || this.position.x + this.velocity.x <= bounds.left) {
-            this.velocity.x *= -1;
+        var new_pos = new vector_cls(this.position.x + this.velocity.x, this.position.y + this.velocity.y);
+        if (!bounds.is_inside_x(new_pos)) {
+            this.velocity.x = -this.velocity.x;
         }
-        if(this.position.y + this.velocity.y >= bounds.bottom || this.position.y + this.velocity.y <= bounds.top) {
-            this.velocity.y *= -1;
+        if (!bounds.is_inside_y(new_pos)) {
+            this.velocity.y = - this.velocity.y;
         }
     }
     this.position.add(this.velocity);

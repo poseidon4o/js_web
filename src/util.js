@@ -64,6 +64,17 @@ function bounds_cls(_tl, _br) {
     this.left    = _tl ? _tl.x : 0;
 };
 
+bounds_cls.prototype.is_inside = function(pt) {
+    return this.is_inside_x(pt) && this.is_inside_y(pt);
+};
+
+bounds_cls.prototype.is_inside_x = function(pt) {
+    return pt.x >= this.left && pt.x <= this.right;
+};
+
+bounds_cls.prototype.is_inside_y = function(pt) {
+    return pt.y >= this.top && pt.y <= this.bottom;
+};
 
 function distance_sq(from, to) {
     return from && to ? ( (from.x - to.x)*(from.x - to.x) + (from.y - to.y)*(from.y - to.y) ) : 0;
