@@ -3,7 +3,7 @@ var DEBUG = false;
 var BOUNCE_WALLS = true;
 var NODE_MASS = 500;
 var ELASTICITY_K = 4;
-var FIELD_FRICTION_K = 0.99;
+var FIELD_FRICTION_K = 0.9;
 var PULSE_RED = true;
 var SPACING = 20;
 
@@ -150,7 +150,7 @@ link_cls.prototype.draw = function(ctx) {
     ctx.beginPath();
 
     if (PULSE_RED) {
-        if (distance_sq(this.left.position, this.right.position) > this.length_sq) {
+        if (distance_sq(this.left.position, this.right.position) > this.length_sq * 1.025) {
             ctx.strokeStyle = "#ff0000";
             ctx.lineWidth = 1;
         } else {
