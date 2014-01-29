@@ -4,18 +4,32 @@
         <script type="text/javascript">
         var system, clock, interactive_interval;
         var PARTICLES = 1000, FPS = 25;
-        function start() {
-            clock = setInterval(function() {
+
+        var mouse_down = false, ctrl_down = false, dragged_node = null;
+
+        function interval () {
+            if (mouse_down) {
+                if (ctrl_down) {
+                    system.frame(false, [dragged_node.id]);
+                } else {
+                    system.frame(true);
+                }
+                dragged_node.position = system.get_mouse();
+            } else {
                 system.frame();
-            }, 1000/FPS);
+            }
+            
+        }
+
+        function start() {
+            clock = setInterval(interval, 1000/FPS);
         }
         function stop() {
             clearInterval(clock);
         }
         function init () {
-            var limit = 50;
+            document.getElementById('ghub').ondragstart = function() { return false; };
             system = new system_cls('draw-field');
- //           system.field.nodes[parseInt(random(0, system.field.nodes.length))].poke(new vector_cls(random(-limit,limit), random(-limit,limit)));
             start();
         }
         function reset () {
@@ -23,39 +37,54 @@
         }
 
         function mdown() {
-		stop();
-		var sl_node = system.get_node_at(system.get_mouse());
-		if( sl_node ) {
-			interactive_interval = setInterval(function() {
-				sl_node.position = system.get_mouse();
-				system.frame(true);
-			}, 1000/FPS);
-		}
-	}
+            mouse_down = true;
+            dragged_node = system.get_node_at(system.get_mouse());
+        }
 
-	function mup() {
-		stop();
-		clearInterval(interactive_interval);
-		start();
-	}
+        function mup() {
+            mouse_down = false;
+            dragged_node = null;
+        }
 
+        window.onkeydown = function(e) {
+            e = e || window.event;
+            e.keyCode == 17 && (ctrl_down = true);
+        }
+
+        window.onkeyup = function(e) {
+            e = e || window.event;
+            e.keyCode == 17 && (ctrl_down = false);
+        }
 
         </script>
-	<style>
-	* {
-		margin: 0;
-		padding: 0;
-	}
-	#draw-field {
-		float: left;
-		clear: both;
-		border: 1px solid red;
-		cursor: pointer;
-	}
-	</style>
+    <style>
+    * {
+        margin: 0;
+        padding: 0;
+        font-family: Segoe Ui,Helvetica Nue, Arial;
+    }
+    #draw-field {
+        float: left;
+        clear: both;
+        border: 1px solid red;
+        cursor: pointer;
+    }
+    #ghub {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+    </style>
     </head>
     <body onload="javascript:init()">
-        <a href="https://github.com/poseidon4o/js_web" target="_blank" style="float:left;display:block;">Github</a>
+        <div id="ghub" style="float:left;">
+            <a href="https://github.com/poseidon4o/js_web" target="_blank" >Github</a>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            Hold [ctrl] while draging to continue animation.
+        </div>
         <canvas onmousedown="javascript:mdown();" onmouseup="javascript:mup()" onmouseout="javascript:mup()" id="draw-field"></canvas>       
     </body>
 </html>
