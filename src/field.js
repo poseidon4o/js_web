@@ -39,6 +39,8 @@ field_cls.prototype.tick = function(bounds, skip_list) {
     
     for(var c = skip_list.length - 1; c >= 0; --c) {
         node_map[skip_list[c]] = 1;
+        this.nodes[skip_list[c]].accelerations = [];
+        this.nodes[skip_list[c]].velocity.scale(0);
     }
 
     var wave_start = 0;

@@ -59,8 +59,6 @@ system_cls.prototype.frame = function(only_draw, skip_list) {
     this.ctx.stroke();
 };
 
-
-
 system_cls.prototype.get_node_at = function(pos) {
     return this.field.get_nearest(pos, SPACING);
 };
