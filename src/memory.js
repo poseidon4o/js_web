@@ -66,34 +66,35 @@ var static_memory = {
 
 
 var fast_memory = {
-    memory: [],
+    memory: new Array(100),
+    sizes: new Array(100),
+    idx: 0,
 
     allocate: function(allocator, size) {
         if ( typeof(allocator) != 'function' || size < 0) {
             return null;
         }
 
-        this.memory.push({
-            value: allocator(size), 
-            size: size
-        });
-        
-        return this.memory.length - 1;
+        this.memory[this.idx] = allocator(size);
+        this.sizes[this.idx] = size;
+        ++this.idx;
+        return this.idx - 1;
     },
 
     free: function(id) {
-        this.memory[id].value = null;
-        this.memory[id] = null;
+        this.memory[id] = this.memory[this.idx];
+        this.sizes[id] = this.sizes[this.idx];
+        --this.idx;
     },
 
     get_memory: function(id) {
-        return this.memory[id].value;
+        return this.memory[id];
     },
 
     memset: function(id, value) {
         var mem = this.memory[id];
-        for(var c = mem.size - 1; c >= 0; --c) {
-            mem.value[c] = value;
+        for(var c = this.sizes[id] - 1; c >= 0; --c) {
+            mem[c] = value;
         }
     }
 }
