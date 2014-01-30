@@ -82,9 +82,10 @@ var fast_memory = {
     },
 
     free: function(id) {
+        --this.idx;
         this.memory[id] = this.memory[this.idx];
         this.sizes[id] = this.sizes[this.idx];
-        --this.idx;
+        this.memory[this.idx] = this.sizes[this.idx] = null;
     },
 
     get_memory: function(id) {
