@@ -92,3 +92,22 @@ function dot(left, right) {
 function random(from, to) {
     return Math.random() * (to - from) + from;
 }
+
+function _benchmark (system, count) {
+    system.reset();
+    var limit = random(10, 300);
+    system.field.nodes[parseInt(random(0, system.field.nodes.length))].poke(new vector_cls(random(-limit,limit), random(-limit,limit)));
+    var start = (new Date()).getTime();
+    for(var c = 0; c < count; ++c) {
+        system.tick();
+    }
+    return (new Date()).getTime() - start;
+}
+
+function benchmark (system, samples, count) {
+    var med = 0;
+    for(var c = 0; c < samples; ++c) {
+        med += _benchmark(system, count);
+    }
+    return med / samples;
+}
