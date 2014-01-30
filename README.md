@@ -18,5 +18,8 @@ recursive iteration:
     benchmark(system, 10, 1000) = 1662.4
 
 que optimization and BFS iteration:
-    benchmark(system, 10, 1000) = 1287.8
+    benchmark(system, 10, 1000) = 1159.9
+
+memory allocator 'optimization':
+    benchmark(system, 10, 1000) = 1303.5
 ```
