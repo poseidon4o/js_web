@@ -51,5 +51,22 @@ var static_memory = {
             throw "This was not allocated!";
         }
         return this.memory[name].value;
+    },
+
+    memset: function(name, value) {
+        if ( !(name in this.memory) ) {
+            throw "This was not allocated!";
+        }
+        var mem = this.memory[name];
+        for(var c = mem.size - 1; c >= 0; --c) {
+            mem.value[c] = value;
+        }
+    },
+
+    alloc_get: function(name, allocator, size) {
+        if ( !(name in this.memory) ) {
+            return this.allocate(name, allocator, size);
+        }
+        return this.get_memory(name);
     }
 }
