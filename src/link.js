@@ -24,32 +24,20 @@ link_cls.prototype.tick = function(bounds) {
 
 
 link_cls.prototype.draw = function(ctx) {
-    ctx.beginPath();
-
-    if (PULSE_RED) {
-        if (distance_sq(this.left.position, this.right.position) > this.length_sq * 1.025) {
-            ctx.strokeStyle = "#ff0000";
-            ctx.lineWidth = 1;
-        } else {
-            ctx.strokeStyle = "#000000";
-            ctx.lineWidth = 0.3;
-        }
+    var black = true;
+    if (distance_sq(this.left.position, this.right.position) > this.length_sq * 1.025) {
+        ctx.strokeStyle = "#ff0000";
+        black = false;
+        ctx.lineWidth = 1;
     } else {
-        var red = (distance_sq(this.left.position, this.right.position) - this.length_sq) / this.length_sq;
-        red = red < 0 ? 0 : red;
-        red = red * (255/5);
-        red = Math.round(red > 255 ? 255 : red);
-        ctx.lineWidth = (red * 2) / 255 + 0.3;
-
-        red = red.toString(16);
-        if( red.length < 2 ) {
-            red = "0" + red;
-        }
-        ctx.strokeStyle = "#" + red + "0000";
-        
+        ctx.strokeStyle = "#000000";
+        ctx.lineWidth = 0.3;
     }
 
-    ctx.moveTo(this.left.position.x, this.left.position.y);
-    ctx.lineTo(this.right.position.x, this.right.position.y);
-    ctx.stroke();
+    if( DRAW_ALL || black == false ) {
+        ctx.beginPath();
+        ctx.moveTo(this.left.position.x, this.left.position.y);
+        ctx.lineTo(this.right.position.x, this.right.position.y);
+        ctx.stroke();
+    }
 };
