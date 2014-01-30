@@ -40,9 +40,9 @@
         function ticker () {
             if (mouse_down) {
                 if (ctrl_down) {
-                    system.tick([dragged_node.id]);
+                    system.tick(dragged_node ? [dragged_node.id] : []);
                 }
-                dragged_node.position = system.get_mouse();
+                dragged_node && (dragged_node.position = system.get_mouse());
             } else {
                 system.tick();
             }
