@@ -47,7 +47,7 @@ field_cls.prototype.tick = function(bounds, skip_list) {
 
 
     var que = new fast_queue_cls(this.nodes.length + 1);
-    que.push(skip_list.length ? skip_list[0] : 0);
+    que.push(skip_list.length ? skip_list[0] : parseInt(this.nodes.length/2));
 
     while(!que.empty()) {
         var id = que.pop();
