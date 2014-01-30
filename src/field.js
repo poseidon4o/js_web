@@ -10,8 +10,12 @@ function field_cls(total) {
         }
     }
     this.relink();
-    static_memory.allocate('field_nodes', memory_allocator.INT8, this.nodes.length);
-    static_memory.allocate('field_links', memory_allocator.INT8, this.nodes.length);
+
+    this.node_mem_name = 'field_nodes';
+    this.link_mem_name = 'field_links';
+
+    static_memory.allocate(this.node_mem_name, memory_allocator.INT8, this.nodes.length);
+    static_memory.allocate(this.link_mem_name, memory_allocator.INT8, this.nodes.length);
 }
 
 field_cls.prototype.relink = function() {
@@ -37,10 +41,10 @@ field_cls.prototype.relink = function() {
 var FIELD_SKIP = 1, FIELD_CHECKED = 2, FIELD_FREE = 0;
 
 field_cls.prototype.tick = function(bounds, skip_list) {
-    static_memory.memset('field_nodes', 0);
-    static_memory.memset('field_links', 0);
-    var node_map = static_memory.get_memory('field_nodes'),
-        link_map = static_memory.get_memory('field_links');
+    static_memory.memset(this.node_mem_name, 0);
+    static_memory.memset(this.link_mem_name, 0);
+    var node_map = static_memory.get_memory(this.node_mem_name),
+        link_map = static_memory.get_memory(this.link_mem_name);
 
     
     for(var c = skip_list.length - 1; c >= 0; --c) {
@@ -95,6 +99,9 @@ field_cls.prototype.clear = function() {
     }
     this.nodes = [];
     this.links = [];
+
+    static_memory.free(this.node_mem_name);
+    static_memory.free(this.link_mem_name);
 };
 
 field_cls.prototype.get_nearest = function(pos, range) {
