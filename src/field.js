@@ -1,21 +1,24 @@
-function field_cls(total) {
+function field_cls(total, bounds) {
     this.nodes = [];
     this.links = [];
     this.total = total || 10;
 
     for(var c = 0; c < this.total; ++c) {
         for(var r = 0; r < this.total; ++r) {
-            this.nodes.push(new node_cls(new vector_cls(c * SPACING + 100, r * SPACING + 100)));
+            var x = c * SPACING + SPACING, y = r * SPACING + SPACING;
+
+            if ( x + SPACING > bounds.right || y + SPACING > bounds.bottom ) {
+                break;
+            }
+
+            this.nodes.push(new node_cls(new vector_cls(x, y)));
             this.nodes[this.nodes.length - 1].id = this.nodes.length - 1;
         }
     }
     this.relink();
 
-    this.node_mem_name = fast_memory.allocate(memory_allocator.INT8, this.nodes.length);;
-    this.link_mem_name = fast_memory.allocate(memory_allocator.INT8, this.nodes.length);;
-
-    
-    
+    this.node_mem_name = fast_memory.allocate(memory_allocator.INT8, this.nodes.length);
+    this.link_mem_name = fast_memory.allocate(memory_allocator.INT8, this.nodes.length);
 }
 
 field_cls.prototype.relink = function() {

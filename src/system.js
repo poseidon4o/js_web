@@ -7,14 +7,13 @@ function system_cls(canvas_id) {
     this.mouse = null;
 
     if (canvas_id !== undefined) {
-    this.canvas = document.getElementById(canvas_id);
+        this.canvas = document.getElementById(canvas_id);
 
-    // 30 - black magic number
-    var width = document.body.clientWidth - 30;
-    var height = document.body.clientHeight - this.canvas.clientTop - 30;
+        // 30 - black magic number
+        var width = document.body.clientWidth - 30;
+        var height = document.body.clientHeight - this.canvas.clientTop - 30;
 
 
-        this.field = new field_cls(Math.round(Math.sqrt(PARTICLES || 4)));
         this.canvas.width = width || this.canvas.clientWidth;
         this.canvas.height = height || this.canvas.clientHeight;
 
@@ -24,19 +23,21 @@ function system_cls(canvas_id) {
         this.ctx.lineWidth = 0.3;
 
         this.bounds = new bounds_cls();
-    var bbox = this.canvas.getBoundingClientRect();
+        var bbox = this.canvas.getBoundingClientRect();
 
         this.bounds.top = this.canvas.clientTop;
         this.bounds.right = width || this.canvas.clientWidth;
         this.bounds.bottom = height || this.canvas.clientHeight;
         this.bounds.left = this.canvas.clientLeft;
 
-    this.mouse = new vector_cls();
-    var self = this;
-    this.canvas.addEventListener('mousemove', function(event) {
-        self.mouse.x = event.clientX - bbox.left;
-        self.mouse.y = event.clientY - bbox.top;
-    });
+        this.mouse = new vector_cls();
+        var self = this;
+        this.canvas.addEventListener('mousemove', function(event) {
+            self.mouse.x = event.clientX - bbox.left;
+            self.mouse.y = event.clientY - bbox.top;
+        });
+
+        this.field = new field_cls(Math.round(Math.sqrt(PARTICLES || 4)), this.bounds);
     };
 }
 
