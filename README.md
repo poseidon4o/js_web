@@ -22,4 +22,7 @@ que optimization and BFS iteration:
 
 memory allocator 'optimization':
     benchmark(system, 10, 1000) = 1303.5
+
+faster allocator:
+    benchmark(system, 10, 1000) = 1296.6
 ```

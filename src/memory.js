@@ -61,12 +61,39 @@ var static_memory = {
         for(var c = mem.size - 1; c >= 0; --c) {
             mem.value[c] = value;
         }
+    }
+}
+
+
+var fast_memory = {
+    memory: [],
+
+    allocate: function(allocator, size) {
+        if ( typeof(allocator) != 'function' || size < 0) {
+            return null;
+        }
+
+        this.memory.push({
+            value: allocator(size), 
+            size: size
+        });
+        
+        return this.memory.length - 1;
     },
 
-    alloc_get: function(name, allocator, size) {
-        if ( !(name in this.memory) ) {
-            return this.allocate(name, allocator, size);
+    free: function(id) {
+        this.memory[id].value = null;
+        this.memory[id] = null;
+    },
+
+    get_memory: function(id) {
+        return this.memory[id].value;
+    },
+
+    memset: function(id, value) {
+        var mem = this.memory[id];
+        for(var c = mem.size - 1; c >= 0; --c) {
+            mem.value[c] = value;
         }
-        return this.get_memory(name);
     }
 }
