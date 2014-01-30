@@ -43,7 +43,7 @@ function system_cls(canvas_id) {
 
 system_cls.prototype.reset = function() {
     this.field.clear();
-    this.field = new field_cls(Math.round(Math.sqrt(PARTICLES || 4)));
+    this.field = new field_cls(Math.round(Math.sqrt(PARTICLES || 4)), this.bounds);
 };
 
 system_cls.prototype.draw = function() {
