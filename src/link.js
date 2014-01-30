@@ -7,12 +7,7 @@ function link_cls(left, right) {
     this.id = 0;
 };
 
-link_cls.prototype.tick = function(bounds, node_map, link_map) {
-    if (link_map[this.id] == 1) {
-        return;
-    }
-
-    link_map[this.id] = 1;
+link_cls.prototype.tick = function(bounds) {
     var dir = this.right.position.dir_to(this.left.position);
     var magn = dir.length_sq() - this.length_sq;
     
@@ -25,10 +20,6 @@ link_cls.prototype.tick = function(bounds, node_map, link_map) {
         this.right.poke(dir.scale(this.right.links.length));
         this.left.poke(dir_l.scale(this.left.links.length));        
     }
-
-
-    this.left.tick(bounds, node_map, link_map);
-    this.right.tick(bounds, node_map, link_map);
 };
 
 

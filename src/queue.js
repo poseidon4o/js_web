@@ -9,7 +9,7 @@ function fast_queue_cls (size) {
     }
 
     this._size = size < 32 ? 32 : size;
-    this.que = new Int8Array(this._size);
+    this.que = new Uint16Array(this._size);
     this.head = this.tail = 0;
 };
 

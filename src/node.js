@@ -7,11 +7,7 @@ function node_cls(position, velocity, size) {
     this.id = 0;
 };
 
-node_cls.prototype.tick = function(bounds, node_map, link_map) {
-    if (node_map[this.id] == 1) {
-        return;
-    }
-
+node_cls.prototype.tick = function(bounds) {
     for(var c = this.accelerations.length - 1; c >= 0; --c) {
         this.velocity.add(this.accelerations[c]);
     }
@@ -28,10 +24,6 @@ node_cls.prototype.tick = function(bounds, node_map, link_map) {
         }
     }
     this.position.add(this.velocity);
-    node_map[this.id] = 1;
-    for(var c = this.links.length - 1; c >= 0; --c) {
-        this.links[c].tick(bounds, node_map, link_map);
-    }
 };
 
 node_cls.prototype.poke = function(acc_vector) {
