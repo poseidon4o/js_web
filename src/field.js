@@ -10,6 +10,8 @@ function field_cls(total) {
         }
     }
     this.relink();
+    static_memory.allocate('field_nodes', memory_allocator.INT8, this.nodes.length);
+    static_memory.allocate('field_links', memory_allocator.INT8, this.nodes.length);
 }
 
 field_cls.prototype.relink = function() {
@@ -35,8 +37,10 @@ field_cls.prototype.relink = function() {
 var FIELD_SKIP = 1, FIELD_CHECKED = 2, FIELD_FREE = 0;
 
 field_cls.prototype.tick = function(bounds, skip_list) {
-    var node_map = new Int8Array(this.nodes.length),
-        link_map = new Int8Array(this.links.length);
+    static_memory.memset('field_nodes', 0);
+    static_memory.memset('field_links', 0);
+    var node_map = static_memory.get_memory('field_nodes'),
+        link_map = static_memory.get_memory('field_links');
 
     
     for(var c = skip_list.length - 1; c >= 0; --c) {
