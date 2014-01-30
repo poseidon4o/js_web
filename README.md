@@ -10,3 +10,13 @@ system.field.nodes[X].poke(new vector_cls(P, Q))        - accelerate node X with
 
 ### [Test here](http://poseidon4o.eu/js_web/test/)
 Drag the nodes to give them a push :)
+
+
+#### Tests:
+```
+recursive iteration:
+    benchmark(system, 10, 1000) = 1662.4
+
+que optimization and BFS iteration:
+    benchmark(system, 10, 1000) = 1287.8
+```
