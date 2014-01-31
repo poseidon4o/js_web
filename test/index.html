@@ -1,5 +1,6 @@
 <html>
     <head>
+        <script type="text/javascript" src="../dep/stats.min.js"></script>
         <script type="text/javascript" src="../src/util.js"></script>
         <script type="text/javascript" src="../src/queue.js"></script>
         <script type="text/javascript" src="../src/memory.js"></script>
@@ -13,6 +14,12 @@
         var PARTICLES = 1000, FPS = 25, DRAW_ALL_LINKS = false;
 
         var mouse_down = false, ctrl_down = false, dragged_node = null;
+
+        var stats = new Stats();
+        stats.setMode(0);
+        stats.domElement.style.position = 'absolute';
+        stats.domElement.style.right = '0px';
+        stats.domElement.style.bottom = '0px';
 
         window.requestAnimFrame = (function(){
             return  window.requestAnimationFrame       ||
@@ -50,8 +57,10 @@
         }
 
         function animation () {
+            stats.begin();
             system.draw();
             anim_clock = requestAnimFrame(animation);
+            stats.end();
         }
 
         function start() {
@@ -63,6 +72,7 @@
             cancelRequestAnimFrame(anim_clock);
         }
         function init () {
+            document.body.appendChild(stats.domElement);
             document.getElementById('ghub').ondragstart = function() { return false; };
             system = new system_cls('draw-field');
             start();
