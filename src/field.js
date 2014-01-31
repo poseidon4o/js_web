@@ -2,6 +2,8 @@ function field_cls(total, bounds) {
     this.nodes = [];
     this.links = [];
     this.total = total || 10;
+    this.draw_path = null;
+    this.path_length = 0;
 
     for(var c = 0; c < this.total; ++c) {
         for(var r = 0; r < this.total; ++r) {
@@ -16,10 +18,46 @@ function field_cls(total, bounds) {
         }
     }
     this.relink();
+    this.create_path();
 
     this.node_mem_name = fast_memory.allocate(memory_allocator.INT8, this.nodes.length);
     this.link_mem_name = fast_memory.allocate(memory_allocator.INT8, this.nodes.length);
-}
+};
+
+field_cls.prototype.create_path = function() {
+    this.draw_path = new Uint16Array(this.nodes.length * 2);
+    var total = this.nodes.length, side = Math.sqrt(this.nodes.length);
+
+
+
+    var idx = 0, x, y, cnt = 0;
+
+    this.draw_path[cnt++] = idx;
+    
+    for(var c = 0; c < side; ++c) {
+        for(var r = 0; r < side; ++r) {
+            x = c;
+            y = ( c % 2 == 0 ? r : side - r - 1);
+            idx = x * side + y;
+            this.draw_path[cnt++] = idx;
+        }
+    }
+
+    for(var c = side - 1; c >= 0; --c) {
+        for(var r = side - 1; r >= 0; --r) {
+            if (side % 2 == 1) {
+                y = c;
+                x = ( c % 2 == 0 ? r : side - r - 1);
+            } else {
+                y = (side - c - 1);
+                x = ( c % 2 != 0 ? r : side - r - 1);
+            }
+            idx = x * side + y;
+            this.draw_path[cnt++] = idx;
+        }
+    }
+    this.path_length = cnt - 1;
+};
 
 field_cls.prototype.relink = function() {
     for(var c = this.nodes.length - 1; c >= 0; --c) {
@@ -88,33 +126,12 @@ field_cls.prototype.tick = function(bounds, skip_list) {
 };
 
 field_cls.prototype.smart_draw_links = function(ctx) {
-    var total = this.nodes.length, side = Math.sqrt(this.nodes.length);
-
-
-    var idx = 0, x, y;
-
-    ctx.moveTo(this.nodes[idx].position.x, this.nodes[idx].position.y);
-    for(var c = 0; c < side; ++c) {
-        for(var r = 0; r < side; ++r) {
-            x = c;
-            y = ( c % 2 == 0 ? r : side - r - 1);
-            idx = x * side + y;
-            ctx.lineTo(this.nodes[idx].position.x, this.nodes[idx].position.y);
-        }
-    }
-
-    for(var c = side - 1; c >= 0; --c) {
-        for(var r = side - 1; r >= 0; --r) {
-            if (side % 2 == 1) {
-                y = c;
-                x = ( c % 2 == 0 ? r : side - r - 1);
-            } else {
-                y = (side - c - 1);
-                x = ( c % 2 != 0 ? r : side - r - 1);
-            }
-            idx = x * side + y;
-            ctx.lineTo(this.nodes[idx].position.x, this.nodes[idx].position.y);
-        }
+    ctx.beginPath();
+    ctx.moveTo(
+        this.nodes[this.draw_path[this.path_length-1]].position.x,
+        this.nodes[this.draw_path[this.path_length-1]].position.y);
+    for(var c = this.path_length - 2; c > 0; --c) {
+        ctx.lineTo(this.nodes[this.draw_path[c]].position.x,this.nodes[this.draw_path[c]].position.y);
     }
     ctx.stroke();
 };
