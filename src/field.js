@@ -22,6 +22,8 @@ function field_cls(total, bounds) {
 
     this.node_mem_name = fast_memory.allocate(memory_allocator.INT8, this.nodes.length);
     this.link_mem_name = fast_memory.allocate(memory_allocator.INT8, this.nodes.length);
+
+    this.tick_que = new fast_queue_cls(this.nodes.length + 1);
 };
 
 field_cls.prototype.create_path = function() {
@@ -95,11 +97,11 @@ field_cls.prototype.tick = function(bounds, skip_list) {
     }
 
 
-    var que = new fast_queue_cls(this.nodes.length + 1);
-    que.push(skip_list.length ? skip_list[0] : parseInt(this.nodes.length/2));
+    this.tick_que.clear();
+    this.tick_que.push(skip_list.length ? skip_list[0] : parseInt(this.nodes.length/2));
 
-    while(!que.empty()) {
-        var id = que.pop();
+    while(!this.tick_que.empty()) {
+        var id = this.tick_que.pop();
 
         if (node_map[id] == FIELD_CHECKED) {
             continue;
@@ -111,12 +113,12 @@ field_cls.prototype.tick = function(bounds, skip_list) {
             for(var c = node.links.length - 1; c >= 0; --c) {
                 node.links[c].tick(bounds);
                 // push the other one
-                que.push( id == node.links[c].left.id ? node.links[c].right.id : node.links[c].left.id );
+                this.tick_que.push( id == node.links[c].left.id ? node.links[c].right.id : node.links[c].left.id );
             }
         } else {
             for(var c = node.links.length - 1; c >= 0; --c) {
                 // push the other one
-                que.push( id == node.links[c].left.id ? node.links[c].right.id : node.links[c].left.id );
+                this.tick_que.push( id == node.links[c].left.id ? node.links[c].right.id : node.links[c].left.id );
             }
         }
 
