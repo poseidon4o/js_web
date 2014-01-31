@@ -10,7 +10,7 @@
         <script type="text/javascript">
 
         var system, tick_clock, anim_clock;
-        var PARTICLES = 1000, FPS = 25, DRAW_ALL = false;
+        var PARTICLES = 1000, FPS = 25, DRAW_ALL_LINKS = false;
 
         var mouse_down = false, ctrl_down = false, dragged_node = null;
 
@@ -139,7 +139,7 @@
             <a href="javascript:inc()">More particles</a>
 	    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 	    <span style="cursor:pointer;"><label for="draw-all-links">Draw all links</label>
-	    <input type="checkbox" onchange="javascript: DRAW_ALL = !DRAW_ALL;" id="draw-all-links"></span>
+	    <input type="checkbox" onchange="javascript: DRAW_ALL_LINKS = !DRAW_ALL_LINKS;" id="draw-all-links"></span>
         </div>
         <canvas onmousedown="javascript:mdown();" onmouseup="javascript:mup()" onmouseout="javascript:mup()" id="draw-field"></canvas>       
     </body>

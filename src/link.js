@@ -34,7 +34,7 @@ link_cls.prototype.draw = function(ctx) {
         ctx.lineWidth = 0.3;
     }
 
-    if( DRAW_ALL || black == false ) {
+    if( black == false ) {
         ctx.beginPath();
         ctx.moveTo(this.left.position.x, this.left.position.y);
         ctx.lineTo(this.right.position.x, this.right.position.y);

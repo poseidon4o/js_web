@@ -87,10 +87,46 @@ field_cls.prototype.tick = function(bounds, skip_list) {
     }
 };
 
+field_cls.prototype.smart_draw_links = function(ctx) {
+    var total = this.nodes.length, side = Math.sqrt(this.nodes.length);
+
+
+    var idx = 0, x, y;
+
+    ctx.moveTo(this.nodes[idx].position.x, this.nodes[idx].position.y);
+    for(var c = 0; c < side; ++c) {
+        for(var r = 0; r < side; ++r) {
+            x = c;
+            y = ( c % 2 == 0 ? r : side - r - 1);
+            idx = x * side + y;
+            ctx.lineTo(this.nodes[idx].position.x, this.nodes[idx].position.y);
+        }
+    }
+
+    for(var c = side - 1; c >= 0; --c) {
+        for(var r = side - 1; r >= 0; --r) {
+            if (side % 2 == 1) {
+                y = c;
+                x = ( c % 2 == 0 ? r : side - r - 1);
+            } else {
+                y = (side - c - 1);
+                x = ( c % 2 != 0 ? r : side - r - 1);
+            }
+            idx = x * side + y;
+            ctx.lineTo(this.nodes[idx].position.x, this.nodes[idx].position.y);
+        }
+    }
+    ctx.stroke();
+};
+
 field_cls.prototype.draw = function(ctx) {
     for(var c = this.nodes.length - 1; c >= 0; --c) {
         this.nodes[c].draw(ctx);
     }
+    if (DRAW_ALL_LINKS) {
+        this.smart_draw_links(ctx);
+    }
+
     for(var c = this.links.length - 1; c >= 0; --c) {
         this.links[c].draw(ctx);
     }
