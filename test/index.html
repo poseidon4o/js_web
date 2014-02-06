@@ -45,6 +45,8 @@
        
 
         function ticker () {
+            tick_clock = requestAnimFrame(ticker);
+            
             if (mouse_down) {
                 if (ctrl_down) {
                     system.tick(dragged_node ? [dragged_node.id] : []);
@@ -53,13 +55,12 @@
             } else {
                 system.tick();
             }
-            tick_clock = requestAnimFrame(ticker);
         }
 
         function animation () {
+            anim_clock = requestAnimFrame(animation);
             stats.begin();
             system.draw();
-            anim_clock = requestAnimFrame(animation);
             stats.end();
         }
 
